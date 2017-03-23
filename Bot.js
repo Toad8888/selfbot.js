@@ -1,7 +1,6 @@
 var config = require("./require/properties.json");
 var Discord = require('discord.js');
 var fs = require('fs');
-var Mandelbrot = require("./require/Mandelbrot.js");
 const exec = require('child_process').execFile;
 var Words = require('./require/Words.json')
 var Stats = require('./require/Stats.json')
