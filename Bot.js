@@ -251,7 +251,7 @@ var Commands = {
             }
         }
     },
-    "serverusage": {
+    "serverusage": { //not yet written
         name: "serverusage",
         desc: "same as global usage but applies only to specific servers",
         usage: "<word> or none",
@@ -345,7 +345,7 @@ var Commands = {
             if (Message[0] === "`") {
                 Message = Message.substring(6, Message.length - 3);
             } else {}
-            fs.writeFile('ToExecute.cpp', Message, function(Error) {
+            fs.writeFile('./require/ToExecute.cpp', Message, function(Error) {
                 if (Error) {
                     console.log(Error, Channel);
                     print(Error);
@@ -368,6 +368,7 @@ var Commands = {
             })
         }
     },
+    //rect does not work yet
     "rect": {
         name: "rect",
         desc: "Creates an ASCII rectangle",
@@ -384,6 +385,24 @@ var Commands = {
             for (var i = 0; i < Width + 1; i++) {
                 str = str + Num.toString();
             }
+        }
+    },
+    "rust": {
+        name: "rust",
+        desc: "executes rust code",
+        usage: "<Rust>",
+        func: function(Message, Channel) {
+            if (Message[0] === "`") {
+                Message = Message.substring(6, Message.length - 3);
+                console.log(Message, Channel);
+            } else {}
+            fs.writeFile('./require/ToExecute.rs', Message, function(Error) {
+                if (Error) {
+                    console.log(Error, Channel);
+                    print(Error);
+                }
+            })
+
         }
     }
 }
