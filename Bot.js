@@ -443,7 +443,7 @@ SelfBot.on('message', message => {
         }
     } else if (message.author.id && message.author.bot === false) {
         Channel = message.channel;
-        if (message.content === "<@76043245804589056>" || message.content === "@Joseph" || message.content === "@Joseph#4596" || message.content.toLowerCase().indexOf("joseph") !== -1 || message.content.toLowerCase().indexOf("<@76043245804589056>") !== -1) {
+        if (message.content === SelfBot.user.id || message.content.toLowerCase().indexOf(SelfBot.user.id) !== -1) {
             beep();
             print("Message: " + message.content + "\n" + "Username: " + message.author.username + "\n" + "Server: " + message.channel.guild.name + "\n" + "Channel: " + message.channel.name);
         } else {
