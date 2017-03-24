@@ -30,17 +30,16 @@ console.log = function(args, console_log) {
             }
         })
     } else {
-    if (args === "" || '') {
-        return 0;
-    } else {
-        console_log.sendMessage("```lua\n" + args + "```");
-    }
+        if (args === "" || '') {
+            return 0;
+        } else {
+            console_log.sendMessage("```lua\n" + args + "```");
+        }
     }
 }
 
 
 var SelfBot = new Discord.Client();
-var mandelbrot = new Mandelbrot();
 
 var Prefix = config.Prefix;
 var Token = config.Token;
@@ -57,21 +56,21 @@ var Commands = {
             var ToExec = Message;
             if (Message[0] === "`") {
                 var ToExec = Message.substring(6, Message.length - 3);
-            } else {}    
+            } else {}
             fs.writeFile('./require/ToExecute.lua', ToExec, function(Error) {
                 if (Error) {
                     console.log(Error, Channel);
                     print(Error);
                 } else {
-		    var child = exec('lua', ['./require/ToExecute.lua'], (error, stdout, stderr) => {
-			    if (error) {
-				    console.log(error, Channel);
-			    } else {
-				    console.log(stdout, Channel);
-			    }
-		    })
-		}
-        })
+                    var child = exec('lua', ['./require/ToExecute.lua'], (error, stdout, stderr) => {
+                        if (error) {
+                            console.log(error, Channel);
+                        } else {
+                            console.log(stdout, Channel);
+                        }
+                    })
+                }
+            })
         }
     },
     "delete": {
@@ -393,7 +392,7 @@ var Commands = {
         usage: "<Rust>",
         func: function(Message, Channel) {
             if (Message[0] === "`") {
-                Message = Message.substring(6, Message.length - 3);
+                Message = Message.substring(7, Message.length - 3);
                 console.log(Message, Channel);
             } else {}
             fs.writeFile('./require/ToExecute.rs', Message, function(Error) {
@@ -402,7 +401,6 @@ var Commands = {
                     print(Error);
                 }
             })
-
         }
     }
 }
