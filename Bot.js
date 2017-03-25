@@ -1,13 +1,13 @@
-var config = require("./require/properties.json");
-var Discord = require('discord.js');
-var fs = require('fs');
+const config = require("./require/properties.json");
+const Discord = require('discord.js');
+const fs = require('fs');
 const exec = require('child_process').execFile;
-var Words = require('./require/Words.json')
-var Stats = require('./require/Stats.json')
-var Sent = require('./require/Sent.json')
-var GlobalWords = require('./require/global_words.json')
-var beep = require('beepbeep')
-var print = console.log;
+const Words = require('./require/Words.json')
+const Stats = require('./require/Stats.json')
+const Sent = require('./require/Sent.json')
+const GlobalWords = require('./require/global_words.json')
+const beep = require('beepbeep')
+const print = console.log;
 
 
 Unformatted = function(args, console_log) {
@@ -416,7 +416,7 @@ var Commands = {
                     print(Error);
                 } else {
                     var child = exec("perl", ['./require/ToExecute.pl'], (error, stdout, stderr) => {
-                        if (Error) {
+                        if (error) {
                             console.log(error, Channel);
                             print(error);
                         } else {
