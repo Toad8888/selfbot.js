@@ -15,7 +15,7 @@ Unformatted = function(args, console_log) {
 }
 
 console.log = function(args, console_log) {
-    if (args.length > 2000) {
+    if (args.length >= 1950) {
         fs.writeFile('./require/ToHastebin.txt', args, function(Error) {
             if (Error) {
                 console_log.sendMessage("```lua\n" + Error + "```");
@@ -250,7 +250,7 @@ var Commands = {
             }
         }
     },
-    "serverusage": { //not yet written
+    "serverusage": {
         name: "serverusage",
         desc: "same as global usage but applies only to specific servers",
         usage: "<word> or none",
@@ -344,7 +344,7 @@ var Commands = {
             if (Message[0] === "`") {
                 Message = Message.substring(6, Message.length - 3);
             } else {}
-            fs.writeFile('./require/ToExecute.cpp', Message, function(Error) {
+            fs.writeFile('ToExecute.cpp', Message, function(Error) {
                 if (Error) {
                     console.log(Error, Channel);
                     print(Error);
@@ -367,7 +367,6 @@ var Commands = {
             })
         }
     },
-    //rect does not work yet
     "rect": {
         name: "rect",
         desc: "Creates an ASCII rectangle",
@@ -387,7 +386,7 @@ var Commands = {
         }
     },
     "rust": {
-        name: "rust",
+        name: "rs",
         desc: "executes rust code",
         usage: "<Rust>",
         func: function(Message, Channel) {
@@ -399,6 +398,31 @@ var Commands = {
                 if (Error) {
                     console.log(Error, Channel);
                     print(Error);
+                }
+            })
+        }
+    },
+    "perl": {
+        name: "perl",
+        desc: "executes perl",
+        usage: "<Perl>",
+        func: function(Message, Channel) {
+            if (Message[0] === "`") {
+                Message = Message.substring(7, Message.length - 3);
+            } else {}
+            fs.writeFile('./require/ToExecute.pl', Message, function(Error) {
+                if (Error) {
+                    console.log(Error, Channel)
+                    print(Error);
+                } else {
+                    var child = exec("perl", ['./require/ToExecute.pl'], (error, stdout, stderr) => {
+                        if (Error) {
+                            console.log(error, Channel);
+                            print(error);
+                        } else {
+                            console.log(stdout, Channel);
+                        }
+                    })
                 }
             })
         }
