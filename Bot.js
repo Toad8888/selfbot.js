@@ -10,21 +10,21 @@ const beep = require('beepbeep')
 const print = console.log;
 
 
-Unformatted = function(args, console_log) {
-    console_log.sendMessage(args);
+Unformatted = function(args, Channel) {
+    Channel.sendMessage(args);
 }
 
-console.log = function(args, console_log) {
+console.log = function(args) {
     if (args.length >= 1950) {
         fs.writeFile('./require/ToHastebin.txt', args, function(Error) {
             if (Error) {
-                console_log.sendMessage("```lua\n" + Error + "```");
+                Channel.sendMessage("```lua\n" + Error + "```");
             } else {
                 var child = exec('hastebin', ['./require/ToHastebin.txt'], (error, stdout, stderr) => {
                     if (error) {
-                        console_log.sendMessage(error);
+                        Channel.sendMessage(error);
                     } else {
-                        console_log.sendMessage('```' + stdout + '```');
+                        Channel.sendMessage('```' + stdout + '```');
                     }
                 })
             }
@@ -33,7 +33,7 @@ console.log = function(args, console_log) {
         if (args === "" || '') {
             return 0;
         } else {
-            console_log.sendMessage("```\n" + args + "```");
+            Channel.sendMessage("```\n" + args + "```");
         }
     }
 }
