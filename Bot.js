@@ -33,7 +33,7 @@ console.log = function(args, console_log) {
         if (args === "" || '') {
             return 0;
         } else {
-            console_log.sendMessage("```lua\n" + args + "```");
+            console_log.sendMessage("```\n" + args + "```");
         }
     }
 }
