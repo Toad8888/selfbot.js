@@ -39,15 +39,15 @@ console.log = function(args) {
 }
 
 
-var SelfBot = new Discord.Client();
+const SelfBot = new Discord.Client();
 
-var Prefix = config.Prefix;
-var Token = config.Token;
-var Ping = config.Ping;
+const Prefix = config.Prefix;
+const Token = config.Token;
+const Ping = config.Ping;
 
 
 
-var Commands = {
+const Commands = {
     "lua": {
         name: "lua",
         desc: "Executes lua code.",
@@ -62,7 +62,7 @@ var Commands = {
                     console.log(Error, Channel);
                     print(Error);
                 } else {
-                    var child = exec('lua', ['./require/ToExecute.lua'], (error, stdout, stderr) => {
+                    const child = exec('lua', ['./require/ToExecute.lua'], (error, stdout, stderr) => {
                         if (error) {
                             console.log(error, Channel);
                         } else {
@@ -78,8 +78,8 @@ var Commands = {
         desc: "Deletes [number] previous messages",
         usage: "<number>",
         func: function(Message, Channel) {
-            var ToDelete = Message;
-            var Mes = parseInt(ToDelete);
+            const ToDelete = Message;
+            const Mes = parseInt(ToDelete);
             Channel.fetchMessages({
                     limit: 100
                 })
@@ -96,11 +96,10 @@ var Commands = {
         desc: "Runs Node.JS code in the bot environment",
         usage: "<code>",
         func: function(Message, Channel, UnformattedMessage) {
-            var Channel = Channel;
-            var message = UnformattedMessage;
+            const Channel = Channel;
+            const  message = UnformattedMessage;
             ToEval = Message;
             try {
-                var Message = Message;
                 eval(ToEval);
             } catch (Error) {
                 console.log(Error, Channel);
@@ -350,10 +349,9 @@ var Commands = {
                     print(Error);
                 }
             })
-            var child = exec('g++', ['ToExecute.cpp'], (error, stdout, stderr) => {
+            var child = exec('g++', ['./require/ToExecute.cpp'], (error, stdout, stderr) => {
                 if (error) {
                     console.log(error, Channel);
-                    print(error);
                 } else {
                     console.log(stdout, Channel);
                     var child1 = exec('./a.out', (error, stdout, stderr) => {
@@ -367,7 +365,7 @@ var Commands = {
             })
         }
     },
-    "rect": {
+    "rect": { //also not finished
         name: "rect",
         desc: "Creates an ASCII rectangle",
         usage: "<Width>, <Height>, <Number>",
@@ -385,22 +383,35 @@ var Commands = {
             }
         }
     },
-    "rust": { //not finished yet
+    "rust": {
         name: "rs",
         desc: "executes rust code",
         usage: "<Rust>",
         func: function(Message, Channel) {
             if (Message[0] === "`") {
                 Message = Message.substring(7, Message.length - 3);
-                console.log(Message, Channel);
             } else {}
             fs.writeFile('./require/ToExecute.rs', Message, function(Error) {
                 if (Error) {
                     console.log(Error, Channel);
                     print(Error);
+                } else {
+                    const child = exec('rustc', ['./require/ToExecute.rs'], (error, stdout, stderr) => {
+                        if (error) {
+                            console.log(error, Channel);
+                        } else {
+                            console.log(stdout, Channel);
+                            const child1 = exec('./ToExecute', (error, stdout, stderr) => {
+                                if (error) {
+                                    console.log(error)
+                                }
+                                console.log(stdout, Channel)
+                            })
+                        }
+                    })
                 }
             })
-        } //to be added later 
+        }
     },
     "perl": {
         name: "perl",
