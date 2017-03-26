@@ -385,7 +385,7 @@ var Commands = {
             }
         }
     },
-    "rust": {
+    "rust": { //not finished yet
         name: "rs",
         desc: "executes rust code",
         usage: "<Rust>",
@@ -400,7 +400,7 @@ var Commands = {
                     print(Error);
                 }
             })
-        }
+        } //to be added later 
     },
     "perl": {
         name: "perl",
