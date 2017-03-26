@@ -341,7 +341,7 @@ const Commands = {
             if (Message[0] === "`") {
                 Message = Message.substring(6, Message.length - 3);
             } else {}
-            fs.writeFile('ToExecute.cpp', Message, function(Error) {
+            fs.writeFile('./require/ToExecute.cpp', Message, function(Error) {
                 if (Error) {
                     console.log(Error, Channel);
                     print(Error);
@@ -421,7 +421,7 @@ const Commands = {
             } else {}
             fs.writeFile('./require/ToExecute.pl', Message, function(Error) {
                 if (Error) {
-                    console.log(Error, Channel)
+                    console.log(Error)
                     print(Error);
                 } else {
                     var child = exec("perl", ['./require/ToExecute.pl'], (error, stdout, stderr) => {
@@ -430,6 +430,29 @@ const Commands = {
                             print(error);
                         } else {
                             console.log(stdout, Channel);
+                        }
+                    })
+                }
+            })
+        }
+    },
+    "clang": {
+        name: "clang",
+        desc: "executes C code",
+        usage: "<program>",
+        func: function(Message, Channel) {
+            if (Message[0] === "`") {
+                Message = Message.substring(4, Message.length - 3);
+            }
+            fs.writeFile('./require/ToExecute.c', Message, function(Error) {
+                if (Error) {
+                    console.log(Error)
+                } else {
+                    const child = exec("gcc", ['./require/ToExecute.c'], (error, stdout, stderr) => {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log(stdout);
                         }
                     })
                 }
