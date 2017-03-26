@@ -8,5 +8,5 @@ install node.js and node package manager (npm).
 Install discord.js and beepbeep
 <br>
 run it using node Bot.js
-#contact me
+# contact me
 hackerman#4596
