@@ -96,8 +96,6 @@ const Commands = {
         desc: "Runs Node.JS code in the bot environment",
         usage: "<code>",
         func: function(Message, Channel, UnformattedMessage) {
-            const Channel = Channel;
-            const  message = UnformattedMessage;
             ToEval = Message;
             try {
                 eval(ToEval);
