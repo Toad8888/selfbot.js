@@ -458,6 +458,20 @@ const Commands = {
                 }
             })
         }
+    },
+    "cowsay": {
+        name: "cowsay",
+        desc: "cowsay nothing more, nothing less",
+        usage: "<words>",
+        func: function(Message, Channel) {
+            const cowsay = exec("cowsay", [Message], (error, stdout, stderr) => {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log(stdout)
+                }
+            })
+        }
     }
 }
 
