@@ -15,7 +15,7 @@ Unformatted = function(args) {
 }
 
 console.log = function(args) {
-    if (args.length >= 1950) {
+    if (args.length >= 2000) {
         fs.writeFile('./require/ToHastebin.txt', args, function(Error) {
             if (Error) {
                 Channel.sendMessage("```lua\n" + Error + "```");
