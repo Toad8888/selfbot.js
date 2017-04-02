@@ -14,17 +14,17 @@ Unformatted = function(args) {
     Channel.sendMessage(args);
 }
 
-console.log = function(args) {
+console.log = function(args, channel) {
     if (args.length >= 2000) {
         fs.writeFile('./require/ToHastebin.txt', args, function(Error) {
             if (Error) {
-                Channel.sendMessage("```lua\n" + Error + "```");
+                channel.sendMessage("```lua\n" + Error + "```");
             } else {
                 var child = exec('hastebin', ['./require/ToHastebin.txt'], (error, stdout, stderr) => {
                     if (error) {
-                        Channel.sendMessage(error);
+                        channel.sendMessage(error);
                     } else {
-                        Channel.sendMessage('```' + stdout + '```');
+                        channel.sendMessage('```' + stdout + '```');
                     }
                 })
             }
@@ -33,7 +33,7 @@ console.log = function(args) {
         if (args === "" || '') {
             return 0;
         } else {
-            Channel.sendMessage("```\n" + args + "```");
+            channel.sendMessage("```\n" + args + "```");
         }
     }
 }
@@ -401,7 +401,7 @@ const Commands = {
                             console.log(stdout, Channel);
                             const child1 = exec('./ToExecute', (error, stdout, stderr) => {
                                 if (error) {
-                                    console.log(error)
+                                    console.log(error, Channel)
                                 }
                                 console.log(stdout, Channel)
                             })
@@ -421,7 +421,7 @@ const Commands = {
             } else {}
             fs.writeFile('./require/ToExecute.pl', Message, function(Error) {
                 if (Error) {
-                    console.log(Error)
+                    console.log(Error, Channel)
                     print(Error);
                 } else {
                     var child = exec("perl", ['./require/ToExecute.pl'], (error, stdout, stderr) => {
@@ -446,13 +446,13 @@ const Commands = {
             }
             fs.writeFile('./require/ToExecute.c', Message, function(Error) {
                 if (Error) {
-                    console.log(Error)
+                    console.log(Error, Channel)
                 } else {
                     const child = exec("gcc", ['./require/ToExecute.c'], (error, stdout, stderr) => {
                         if (error) {
-                            console.log(error);
+                            console.log(error, Channel);
                         } else {
-                            console.log(stdout);
+                            console.log(stdout, Channel);
                         }
                     })
                 }
@@ -466,9 +466,9 @@ const Commands = {
         func: function(Message, Channel) {
             const cowsay = exec("cowsay", [Message], (error, stdout, stderr) => {
                 if (error) {
-                    console.log(error);
+                    console.log(error, Channel);
                 } else {
-                    console.log(stdout)
+                    console.log(stdout, Channel)
                 }
             })
         }
