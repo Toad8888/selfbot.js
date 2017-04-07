@@ -455,6 +455,14 @@ const Commands = {
                             console.log(stdout, Channel);
                         }
                     })
+
+                    const child = exec("./a.out", [''], (error, stdout, stderr) => {
+                        if (error) {
+                            console.log(error, Channel);
+                        } else {
+                            console.log(stdout, Channel);
+                        }
+                    }
                 }
             })
         }
