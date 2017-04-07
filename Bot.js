@@ -10,7 +10,7 @@ const beep = require('beepbeep')
 const print = console.log;
 
 
-Unformatted = function(args) {
+Unformatted = function(args, Channel) {
     Channel.sendMessage(args);
 }
 
