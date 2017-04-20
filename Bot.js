@@ -1,3 +1,4 @@
+console.time("Requiring Dependencies")
 const config = require("./require/properties.json");
 const Discord = require('discord.js');
 const fs = require('fs');
@@ -8,15 +9,19 @@ const Sent = require('./require/Sent.json')
 const GlobalWords = require('./require/global_words.json')
 const beep = require('beepbeep')
 const print = console.log;
+console.timeEnd("Requiring Dependencies");
 
+console.time("Setting variables");
+var DeleteOnSend = false;
+var WaitTime = 0;
 
-Unformatted = function(args, Channel) {
+Unformatted = function (args) {
     Channel.sendMessage(args);
 }
 
-console.log = function(args, channel) {
+SendMessage = function (args, channel) {
     if (args.length >= 2000) {
-        fs.writeFile('./require/ToHastebin.txt', args, function(Error) {
+        fs.writeFile('./require/ToHastebin.txt', args, function (Error) {
             if (Error) {
                 channel.sendMessage("```lua\n" + Error + "```");
             } else {
@@ -37,8 +42,9 @@ console.log = function(args, channel) {
         }
     }
 }
+console.timeEnd("Setting variables");
 
-
+console.time("Starting selfbot");
 const SelfBot = new Discord.Client();
 
 const Prefix = config.Prefix;
@@ -52,21 +58,21 @@ const Commands = {
         name: "lua",
         desc: "Executes lua code.",
         usage: "<code>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             var ToExec = Message;
             if (Message[0] === "`") {
                 var ToExec = Message.substring(6, Message.length - 3);
             } else {}
-            fs.writeFile('./require/ToExecute.lua', ToExec, function(Error) {
+            fs.writeFile('./require/ToExecute.lua', ToExec, function (Error) {
                 if (Error) {
-                    console.log(Error, Channel);
+                    SendMessage(Error, Channel);
                     print(Error);
                 } else {
                     const child = exec('lua', ['./require/ToExecute.lua'], (error, stdout, stderr) => {
                         if (error) {
-                            console.log(error, Channel);
+                            SendMessage(error, Channel);
                         } else {
-                            console.log(stdout, Channel);
+                            SendMessage(stdout, Channel);
                         }
                     })
                 }
@@ -77,7 +83,7 @@ const Commands = {
         name: "delete",
         desc: "Deletes [number] previous messages",
         usage: "<number>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             const ToDelete = Message;
             const Mes = parseInt(ToDelete);
             Channel.fetchMessages({
@@ -95,12 +101,12 @@ const Commands = {
         name: "exec",
         desc: "Runs Node.JS code in the bot environment",
         usage: "<code>",
-        func: function(Message, Channel, UnformattedMessage) {
+        func: function (Message, Channel, UnformattedMessage) {
             ToEval = Message;
             try {
                 eval(ToEval);
             } catch (Error) {
-                console.log(Error, Channel);
+                SendMessage(Error, Channel);
             }
         }
     },
@@ -108,8 +114,8 @@ const Commands = {
         name: "exit",
         desc: "Closes the SelfBot",
         usage: "",
-        func: function() {
-            console.log("Exited", Channel);
+        func: function () {
+            SendMessage("Exited", Channel);
             process.exit(0);
         }
     },
@@ -117,7 +123,7 @@ const Commands = {
         name: "coin",
         desc: "Flips a coin [x] times",
         usage: "<number>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             ToFlip = Message;
             var Heads = 0;
             var Tails = 0;
@@ -129,11 +135,11 @@ const Commands = {
                 }
             }
             if (Heads > Tails) {
-                console.log("Heads won!\nHeads: " + Heads + "\nTails: " + Tails, Channel);
+                SendMessage("Heads won!\nHeads: " + Heads + "\nTails: " + Tails, Channel);
             } else if (Tails > Heads) {
-                console.log("Tails won!\nTails: " + Tails + "\nHeads: " + Heads, Channel);
+                SendMessage("Tails won!\nTails: " + Tails + "\nHeads: " + Heads, Channel);
             } else {
-                console.log("Tie!\nHeads: " + Heads + "\nTails: " + Tails, Channel);
+                SendMessage("Tie!\nHeads: " + Heads + "\nTails: " + Tails, Channel);
             }
         }
     },
@@ -141,27 +147,27 @@ const Commands = {
         name: "usage",
         desc: "returns amount of times a word has been used",
         usage: "<string> or none",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             UsageArgs = Message;
             if (UsageArgs === "" || '') {
                 var TemporaryWords = [];
                 for (var Word in Words) {
                     TemporaryWords.push([Word, Words[Word]])
                 }
-                TemporaryWords.sort(function(b, a) {
+                TemporaryWords.sort(function (b, a) {
                     return a[1] - b[1];
                 })
                 var TWords = "";
                 for (i = 0; i < 10; i++) {
                     TWords = TWords + TemporaryWords[i][0] + ": " + TemporaryWords[i][1] + "\n";
                 }
-                console.log(TWords, Channel);
+                SendMessage(TWords, Channel);
             } else {
                 if (UsageArgs)
                     if (Words[UsageArgs]) {
-                        console.log(UsageArgs + " was used " + Words[UsageArgs] + " times", Channel);
+                        SendMessage(UsageArgs + " was used " + Words[UsageArgs] + " times", Channel);
                     } else {
-                        console.log(UsageArgs + " was never used", Channel)
+                        SendMessage(UsageArgs + " was never used", Channel)
                     }
             }
         }
@@ -170,24 +176,24 @@ const Commands = {
         name: "stats",
         desc: "returns amount of messages recieved from different guilds",
         usage: "<guild> or none",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             if (Message === "" || '') {
                 var TemporaryStats = [];
                 for (var stats in Stats) {
                     TemporaryStats.push([stats, Stats[stats]])
                 }
-                TemporaryStats.sort(function(b, a) {
+                TemporaryStats.sort(function (b, a) {
                     return a[1] - b[1];
                 })
                 var TStats = "";
                 for (i = 0; i < 10; i++) {
                     TStats = TStats + TemporaryStats[i][0] + ": " + TemporaryStats[i][1] + "\n";
                 }
-                console.log(TStats, Channel);
+                SendMessage(TStats, Channel);
             } else {
                 if (Message) {
                     if (Stats[Message]) {
-                        console.log("Received " + Stats[Message] + " messages from " + Message, Channel);
+                        SendMessage("Received " + Stats[Message] + " messages from " + Message, Channel);
                     }
                 }
             }
@@ -197,23 +203,23 @@ const Commands = {
         name: "sent",
         desc: "returns number of messages sent by the user",
         usage: "<channel> or none",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             if (Message === "") {
                 var TemporarySent = [];
                 for (var sent in Sent) {
                     TemporarySent.push([sent, Sent[sent]])
                 }
-                TemporarySent.sort(function(b, a) {
+                TemporarySent.sort(function (b, a) {
                     return a[1] - b[1];
                 })
                 var TSent = "";
                 for (i = 0; i < 6; i++) {
                     TSent = TSent + TemporarySent[i][0] + ": " + TemporarySent[i][1] + "\n";
                 }
-                console.log(TSent, Channel);
+                SendMessage(TSent, Channel);
             } else {
                 if (Sent[Message]) {
-                    console.log("You've sent " + Sent[Message] + " messages to " + Message, Channel);
+                    SendMessage("You've sent " + Sent[Message] + " messages to " + Message, Channel);
                 }
             }
         }
@@ -222,27 +228,27 @@ const Commands = {
         name: "globalusage",
         desc: "returns number of times a word was used, if there is no args then it returns the top 15 words used",
         usage: "<word> or none",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             UsageArgs = Message;
             if (UsageArgs === "" || '') {
                 var TemporaryWords = [];
                 for (var GlobalWord in GlobalWords) {
                     TemporaryWords.push([GlobalWord, GlobalWords[GlobalWord]])
                 }
-                TemporaryWords.sort(function(b, a) {
+                TemporaryWords.sort(function (b, a) {
                     return a[1] - b[1];
                 })
                 var TWords = "";
                 for (i = 0; i < 25; i++) {
                     TWords = TWords + TemporaryWords[i][0] + ": " + TemporaryWords[i][1] + "\n";
                 }
-                console.log(TWords, Channel);
+                SendMessage(TWords, Channel);
             } else {
                 if (UsageArgs)
                     if (GlobalWords[UsageArgs]) {
-                        console.log(UsageArgs + " was used " + GlobalWords[UsageArgs] + " times", Channel);
+                        SendMessage(UsageArgs + " was used " + GlobalWords[UsageArgs] + " times", Channel);
                     } else {
-                        console.log(UsageArgs + " was never used", Channel)
+                        SendMessage(UsageArgs + " was never used", Channel)
                     }
             }
         }
@@ -251,7 +257,7 @@ const Commands = {
         name: "serverusage",
         desc: "same as global usage but applies only to specific servers",
         usage: "<word> or none",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
 
         }
     },
@@ -259,7 +265,7 @@ const Commands = {
         name: "commands",
         desc: "returns a list of commands",
         usage: "<none>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             var temp = [];
             var tempstring = "";
             for (Command in Commands) {
@@ -268,18 +274,18 @@ const Commands = {
             for (i = 0; i < temp.length; i++) {
                 tempstring = tempstring + temp[i] + "\n";
             }
-            console.log(tempstring, Channel);
+            SendMessage(tempstring, Channel);
         }
     },
     "c_usage": {
         name: "c_usage",
         desc: "returns usage for a specific command",
         usage: "<command>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             if (Commands[Message]) {
-                console.log([Commands[Message].usage], Channel);
+                SendMessage([Commands[Message].usage], Channel);
             } else {
-                console.log("That command does not exist", Channel);
+                SendMessage("That command does not exist", Channel);
             }
         }
     },
@@ -287,11 +293,11 @@ const Commands = {
         name: "desc",
         desc: "returns description for a specific command",
         usage: "<command>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             if (Commands[Message]) {
-                console.log([Commands[Message].desc], Channel);
+                SendMessage([Commands[Message].desc], Channel);
             } else {
-                console.log("That command does not exist", Channel);
+                SendMessage("That command does not exist", Channel);
             }
         }
     },
@@ -299,7 +305,7 @@ const Commands = {
         name: "advcmds",
         desc: "returns detailed list of commands",
         usage: "<none>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             var temp = [];
             var tempstring = "";
             for (Command in Commands) {
@@ -308,27 +314,27 @@ const Commands = {
             for (i = 0; i < temp.length; i++) {
                 tempstring = tempstring + "Command: " + temp[i][0] + " Description: " + temp[i][1] + "\n"
             }
-            console.log(tempstring, Channel);
+            SendMessage(tempstring, Channel);
         }
     },
     "python": {
         name: "python",
         desc: "Executes python code.",
         usage: "<code>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             ToExec = Message;
-            fs.writeFile('./require/ToExecute.py', ToExec, function(Error) {
+            fs.writeFile('./require/ToExecute.py', ToExec, function (Error) {
                 if (Error) {
-                    console.log(Error, Channel);
+                    SendMessage(Error, Channel);
                     print(Error);
                 }
             })
             var child = exec('python', ['./require/ToExecute.py'], (error, stdout, stderr) => {
                 if (error) {
-                    console.log(error, Channel);
+                    SendMessage(error, Channel);
                 } else {
                     print(stderr);
-                    console.log(stdout, Channel);
+                    SendMessage(stdout, Channel);
                 }
             })
         }
@@ -337,27 +343,27 @@ const Commands = {
         name: "cpp",
         desc: "runs C++ code",
         usage: "<CPP>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             if (Message[0] === "`") {
                 Message = Message.substring(6, Message.length - 3);
             } else {}
-            fs.writeFile('./require/ToExecute.cpp', Message, function(Error) {
+            fs.writeFile('./require/ToExecute.cpp', Message, function (Error) {
                 if (Error) {
-                    console.log(Error, Channel);
+                    SendMessage(Error, Channel);
                     print(Error);
                 }
             })
             var child = exec('g++', ['./require/ToExecute.cpp'], (error, stdout, stderr) => {
                 if (error) {
-                    console.log(error, Channel);
+                    SendMessage(error, Channel);
                 } else {
-                    console.log(stdout, Channel);
+                    SendMessage(stdout, Channel);
                     var child1 = exec('./a.out', (error, stdout, stderr) => {
                         if (error) {
-                            console.log(error, Channel);
+                            SendMessage(error, Channel);
                             print(error);
                         }
-                        console.log(stdout, Channel);
+                        SendMessage(stdout, Channel);
                     })
                 }
             })
@@ -367,7 +373,7 @@ const Commands = {
         name: "rect",
         desc: "Creates an ASCII rectangle",
         usage: "<Width>, <Height>, <Number>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             var Width = Message[0]
             var Height = Message[1]
             var Num = Message[2]
@@ -385,25 +391,25 @@ const Commands = {
         name: "rs",
         desc: "executes rust code",
         usage: "<Rust>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             if (Message[0] === "`") {
                 Message = Message.substring(7, Message.length - 3);
             } else {}
-            fs.writeFile('./require/ToExecute.rs', Message, function(Error) {
+            fs.writeFile('./require/ToExecute.rs', Message, function (Error) {
                 if (Error) {
-                    console.log(Error, Channel);
+                    SendMessage(Error, Channel);
                     print(Error);
                 } else {
                     const child = exec('rustc', ['./require/ToExecute.rs'], (error, stdout, stderr) => {
                         if (error) {
-                            console.log(error, Channel);
+                            SendMessage(error, Channel);
                         } else {
-                            console.log(stdout, Channel);
+                            SendMessage(stdout, Channel);
                             const child1 = exec('./ToExecute', (error, stdout, stderr) => {
                                 if (error) {
-                                    console.log(error, Channel)
+                                    SendMessage(error, Channel)
                                 }
-                                console.log(stdout, Channel)
+                                SendMessage(stdout, Channel)
                             })
                         }
                     })
@@ -415,21 +421,21 @@ const Commands = {
         name: "perl",
         desc: "executes perl",
         usage: "<Perl>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             if (Message[0] === "`") {
                 Message = Message.substring(7, Message.length - 3);
             } else {}
-            fs.writeFile('./require/ToExecute.pl', Message, function(Error) {
+            fs.writeFile('./require/ToExecute.pl', Message, function (Error) {
                 if (Error) {
-                    console.log(Error, Channel)
+                    SendMessage(Error, Channel)
                     print(Error);
                 } else {
                     var child = exec("perl", ['./require/ToExecute.pl'], (error, stdout, stderr) => {
                         if (error) {
-                            console.log(error, Channel);
+                            SendMessage(error, Channel);
                             print(error);
                         } else {
-                            console.log(stdout, Channel);
+                            SendMessage(stdout, Channel);
                         }
                     })
                 }
@@ -440,29 +446,29 @@ const Commands = {
         name: "clang",
         desc: "executes C code",
         usage: "<program>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             if (Message[0] === "`") {
                 Message = Message.substring(4, Message.length - 3);
             }
-            fs.writeFile('./require/ToExecute.c', Message, function(Error) {
+            fs.writeFile('./require/ToExecute.c', Message, function (Error) {
                 if (Error) {
-                    console.log(Error, Channel)
+                    SendMessage(Error, Channel)
                 } else {
                     const child = exec("gcc", ['./require/ToExecute.c'], (error, stdout, stderr) => {
                         if (error) {
-                            console.log(error, Channel);
+                            SendMessage(error, Channel);
                         } else {
-                            console.log(stdout, Channel);
+                            SendMessage(stdout, Channel);
                         }
                     })
 
-                    const child = exec("./a.out", [''], (error, stdout, stderr) => {
+                    const child1 = exec("./a.out", [''], (error, stdout, stderr) => {
                         if (error) {
-                            console.log(error, Channel);
+                            SendMessage(error, Channel);
                         } else {
-                            console.log(stdout, Channel);
+                            SendMessage(stdout, Channel);
                         }
-                    }
+                    })
                 }
             })
         }
@@ -471,38 +477,53 @@ const Commands = {
         name: "cowsay",
         desc: "cowsay nothing more, nothing less",
         usage: "<words>",
-        func: function(Message, Channel) {
+        func: function (Message, Channel) {
             const cowsay = exec("cowsay", [Message], (error, stdout, stderr) => {
                 if (error) {
-                    console.log(error, Channel);
+                    SendMessage(error, Channel);
                 } else {
-                    console.log(stdout, Channel)
+                    SendMessage(stdout, Channel)
                 }
             })
+        }
+    },
+    "DeleteOnSend": {
+        name: "dos",
+        desc: "Toggles Delete messages 100 ms after sending",
+        usage: "time",
+        func: function (Message, Channel) {
+            DeleteOnSend = !DeleteOnSend;
+            SendMessage(DeleteOnSend, Channel);
         }
     }
 }
 
 SelfBot.on('ready', () => {
-    print("Selfbot is now running.");
+    console.log("Selfbot is now running.");
 })
-
+console.timeEnd("Starting selfbot");
 SelfBot.on('message', message => {
     if (message.author.id === SelfBot.user.id && message.content[0] === Prefix) {
-        Channel = message.channel;
-        for (var Command in Commands) {
-            var key = Command;
-            var name = Commands[key].name;
-            var usage = Commands[key].usage;
-            if (message.content.toLowerCase().startsWith(Prefix + name.toLowerCase())) {
-                if (usage === "") {
-                    Commands[Command].func();
-                } else if (name === "exec") {
-                    var ToCommand = message.content.split(" ").slice(1).join(" ");
-                    Commands[Command].func(ToCommand, Channel, message);
-                } else {
-                    var ToCommand = message.content.split(" ").slice(1).join(" ");
-                    Commands[Command].func(ToCommand, Channel);
+        if (DeleteOnSend === true) {
+            //   setTimeout(function () {
+            //     message.delete();
+            //  }, 100);
+        } else {
+            Channel = message.channel;
+            for (var Command in Commands) {
+                var key = Command;
+                var name = Commands[key].name;
+                var usage = Commands[key].usage;
+                if (message.content.toLowerCase().startsWith(Prefix + name.toLowerCase())) {
+                    if (usage === "") {
+                        Commands[Command].func();
+                    } else if (name === "exec") {
+                        var ToCommand = message.content.split(" ").slice(1).join(" ");
+                        Commands[Command].func(ToCommand, Channel, message);
+                    } else {
+                        var ToCommand = message.content.split(" ").slice(1).join(" ");
+                        Commands[Command].func(ToCommand, Channel);
+                    }
                 }
             }
         }
@@ -571,29 +592,29 @@ SelfBot.on('message', message => {
 })
 
 
-setInterval(function() {
-    fs.writeFile("./require/Words.json", JSON.stringify(Words), 'utf8', function(error) {
+setInterval(function () {
+    fs.writeFile("./require/Words.json", JSON.stringify(Words), 'utf8', function (error) {
         if (error)
             print(error)
     })
 }, 30000)
 
-setInterval(function() {
-    fs.writeFile("./require/global_words.json", JSON.stringify(GlobalWords), 'utf8', function(error) {
+setInterval(function () {
+    fs.writeFile("./require/global_words.json", JSON.stringify(GlobalWords), 'utf8', function (error) {
         if (error)
             print(error)
     })
 }, 15000)
 
-setInterval(function() {
-    fs.writeFile("./require/Sent.json", JSON.stringify(Sent), 'utf8', function(error) {
+setInterval(function () {
+    fs.writeFile("./require/Sent.json", JSON.stringify(Sent), 'utf8', function (error) {
         if (error)
             print(error)
     })
 }, 30000)
 
-setInterval(function() {
-    fs.writeFile("./require/Stats.json", JSON.stringify(Stats), 'utf8', function(error) {
+setInterval(function () {
+    fs.writeFile("./require/Stats.json", JSON.stringify(Stats), 'utf8', function (error) {
         if (error) {
             print(error)
         }
