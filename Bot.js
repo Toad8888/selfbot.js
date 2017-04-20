@@ -497,11 +497,11 @@ const Commands = {
         usage: "time",
         func: function (Message, Channel) {
             if (DeleteOnSend === false) {
-                DeleteOnSend = !DeleteOnSend;
+                DeleteOnSend = true
+                WaitTime = Message;
             } else {
-                DeleteOnSend = true;
+                DeleteOnSend = false;
             }
-            SendMessage(DeleteOnSend, Channel);
         }
     }
 }
@@ -509,27 +509,26 @@ const Commands = {
 console.timeEnd("Starting selfbot");
 
 SelfBot.on('message', message => {
+    if (DeleteOnSend === true && SelfBot.user.id == message.author.id) {
+        setTimeout(function () {
+            message.delete();
+        }, WaitTime);
+    }
     if (message.author.id === SelfBot.user.id && message.content[0] === Prefix) {
-        if (DeleteOnSend === true) {
-            //   setTimeout(function () {
-            //     message.delete();
-            //  }, 100);
-        } else {
-            Channel = message.channel;
-            for (var Command in Commands) {
-                var key = Command;
-                var name = Commands[key].name;
-                var usage = Commands[key].usage;
-                if (message.content.toLowerCase().startsWith(Prefix + name.toLowerCase())) {
-                    if (usage === "") {
-                        Commands[Command].func();
-                    } else if (name === "exec") {
-                        var ToCommand = message.content.split(" ").slice(1).join(" ");
-                        Commands[Command].func(ToCommand, Channel, message);
-                    } else {
-                        var ToCommand = message.content.split(" ").slice(1).join(" ");
-                        Commands[Command].func(ToCommand, Channel);
-                    }
+        Channel = message.channel;
+        for (var Command in Commands) {
+            var key = Command;
+            var name = Commands[key].name;
+            var usage = Commands[key].usage;
+            if (message.content.toLowerCase().startsWith(Prefix + name.toLowerCase())) {
+                if (usage === "") {
+                    Commands[Command].func();
+                } else if (name === "exec") {
+                    var ToCommand = message.content.split(" ").slice(1).join(" ");
+                    Commands[Command].func(ToCommand, Channel, message);
+                } else {
+                    var ToCommand = message.content.split(" ").slice(1).join(" ");
+                    Commands[Command].func(ToCommand, Channel);
                 }
             }
         }
@@ -626,5 +625,3 @@ setInterval(function () {
         }
     })
 }, 30000)
-
-
