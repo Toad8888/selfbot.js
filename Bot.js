@@ -51,7 +51,11 @@ const Prefix = config.Prefix;
 const Token = config.Token;
 const Ping = config.Ping;
 
+SelfBot.on('ready', () => {
+    console.log("Selfbot is now running.");
+})
 
+SelfBot.login(Token);
 
 const Commands = {
     "lua": {
@@ -492,16 +496,18 @@ const Commands = {
         desc: "Toggles Delete messages 100 ms after sending",
         usage: "time",
         func: function (Message, Channel) {
-            DeleteOnSend = !DeleteOnSend;
+            if (DeleteOnSend === false) {
+                DeleteOnSend = !DeleteOnSend;
+            } else {
+                DeleteOnSend = true;
+            }
             SendMessage(DeleteOnSend, Channel);
         }
     }
 }
 
-SelfBot.on('ready', () => {
-    console.log("Selfbot is now running.");
-})
 console.timeEnd("Starting selfbot");
+
 SelfBot.on('message', message => {
     if (message.author.id === SelfBot.user.id && message.content[0] === Prefix) {
         if (DeleteOnSend === true) {
@@ -621,4 +627,4 @@ setInterval(function () {
     })
 }, 30000)
 
-SelfBot.login(Token);
+
