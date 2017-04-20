@@ -15,7 +15,7 @@ console.time("Setting variables");
 var DeleteOnSend = false;
 var WaitTime = 0;
 
-Unformatted = function (args) {
+SendUnformattedMessage = function (args) {
     Channel.sendMessage(args);
 }
 
