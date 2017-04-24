@@ -15,6 +15,7 @@ console.time("Setting variables");
 var DeleteOnSend = false;
 var WaitTime = 0;
 
+
 SendUnformattedMessage = function (args) {
     Channel.sendMessage(args);
 }
@@ -326,8 +327,11 @@ const Commands = {
         desc: "Executes python code.",
         usage: "<code>",
         func: function (Message, Channel) {
-            ToExec = Message;
-            fs.writeFile('./require/ToExecute.py', ToExec, function (Error) {
+            if (Message[0] === "`") {
+                Message = Message.substring(9, Message.length - 3);
+                console.log(Message);
+            }
+            fs.writeFile('./require/ToExecute.py', Message, function (Error) {
                 if (Error) {
                     SendMessage(Error, Channel);
                     print(Error);
@@ -350,7 +354,7 @@ const Commands = {
         func: function (Message, Channel) {
             if (Message[0] === "`") {
                 Message = Message.substring(6, Message.length - 3);
-            } else {}
+            }
             fs.writeFile('./require/ToExecute.cpp', Message, function (Error) {
                 if (Error) {
                     SendMessage(Error, Channel);
